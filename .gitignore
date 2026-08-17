@@ -1,0 +1,10 @@
+node_modules/
+dist/
+dashboard-dist/
+.env
+.env.local
+*.pem
+*.log
+.DS_Store
+.vscode/
+coverage/
