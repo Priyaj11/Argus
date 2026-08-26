@@ -91,7 +91,7 @@ src/
 
 ## How the security check works
 
-Every incoming webhook is signed by GitHub using a shared secret. The server recomputes that signature (HMAC-SHA256) and compares it before doing anything — so only genuine GitHub requests are processed.
+Every incoming webhook is signed by GitHub using a shared secret. The server recomputes that signature (HMAC-SHA256) and compares it before doing anything, so only genuine GitHub requests are processed.
 
 ## License
 
