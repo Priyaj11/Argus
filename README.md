@@ -33,13 +33,13 @@ The queue matters: GitHub expects a response within ~10 seconds, but an AI revie
 
 ## Tech stack
 
-- **Node.js + TypeScript** — the app
-- **Express** — webhook receiver + HTTP server
-- **BullMQ + Redis** — background job queue
-- **PostgreSQL** — review history
-- **Anthropic Claude** — the code reviewer
-- **Octokit** — GitHub API client
-- **ngrok** — public tunnel for local webhook testing
+- **Node.js + TypeScript** - the app
+- **Express** - webhook receiver + HTTP server
+- **BullMQ + Redis** - background job queue
+- **PostgreSQL** - review history
+- **Anthropic Claude** - the code reviewer
+- **Octokit** - GitHub API client
+- **ngrok** - public tunnel for local webhook testing
 
 ## Project structure
 
