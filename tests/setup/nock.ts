@@ -3,8 +3,10 @@ import nock from 'nock';
 
 beforeAll(() => {
   nock.disableNetConnect();
-  // Supertest binds a local port, so localhost has to stay reachable.
-  nock.enableNetConnect((host) => /^(127\.0\.0\.1|localhost)/.test(host));
+  // Block only the external APIs. Everything else (the Docker daemon used by
+  // Testcontainers, the containers themselves, and Supertest's local port)
+  // must stay reachable.
+  nock.enableNetConnect((host) => !/api\.(github|anthropic)\.com/.test(host));
 });
 
 afterEach(() => {
