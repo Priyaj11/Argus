@@ -184,4 +184,38 @@ describe('end to end review workflow', () => {
     );
     expect(rows).toHaveLength(0);
   }, 60_000);
+  it('formats a finding that has no line number', async () => {
+    nock(GITHUB)
+      .get('/repos/acme/noline/pulls/5/files')
+      .query({ per_page: 30 })
+      .reply(200, [{ filename: 'src/c.ts', patch: '@@ -1 +1 @@\n-p\n+q' }]);
+
+    nock(ANTHROPIC)
+      .post('/v1/messages')
+      .reply(
+        200,
+        claudeReply(
+          '[{"file":"src/c.ts","severity":"info","comment":"consider renaming"}]'
+        )
+      );
+
+    let comment: any;
+    nock(GITHUB)
+      .post('/repos/acme/noline/issues/5/comments', (body) => {
+        comment = body;
+        return true;
+      })
+      .reply(201, { id: 3 });
+
+    const job = await queue.reviewQueue.add('review-pr', {
+      owner: 'acme',
+      repo: 'noline',
+      prNumber: 5,
+    });
+
+    const result = await settled(job.id!);
+    expect(result.ok).toBe(true);
+    expect(comment.body).toContain('`src/c.ts`');
+    expect(comment.body).not.toContain('src/c.ts:');
+  }, 60_000);
 });

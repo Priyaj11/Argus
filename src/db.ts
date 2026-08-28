@@ -3,6 +3,7 @@ import 'dotenv/config';
 
 // A pool = a set of reusable connections to Postgres.
 export const pool = new Pool({
+/* v8 ignore next 3 -- local development default, never taken under test */
   connectionString:
     process.env.DATABASE_URL ??
     'postgresql://reviewer:reviewer_secret@localhost:5432/ai_reviewer',

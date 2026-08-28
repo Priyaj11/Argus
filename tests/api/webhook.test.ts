@@ -70,4 +70,52 @@ describe('POST /webhook', () => {
     expect(res.text).toBe('ignored');
     expect(reviewQueue.add).not.toHaveBeenCalled();
   });
+
+  it('falls back to flat owner, repo and prNumber fields when the GitHub shape is absent', async () => {
+    const body = JSON.stringify({ owner: 'acme', repo: 'widgets', prNumber: 9 });
+
+    const res = await request(app)
+      .post('/webhook')
+      .set('Content-Type', 'application/json')
+      .set('x-hub-signature-256', sign(body))
+      .send(body);
+
+    expect(res.status).toBe(200);
+    expect(reviewQueue.add).toHaveBeenCalledWith('review-pr', {
+      owner: 'acme',
+      repo: 'widgets',
+      prNumber: 9,
+    });
+  });
+
+  it('queues a job with undefined fields when the payload has neither shape', async () => {
+    // Characterises current behaviour: the action filter is skipped when
+    // pull_request is absent, so an empty object still enqueues work.
+    const body = JSON.stringify({});
+
+    const res = await request(app)
+      .post('/webhook')
+      .set('Content-Type', 'application/json')
+      .set('x-hub-signature-256', sign(body))
+      .send(body);
+
+    expect(res.status).toBe(200);
+    expect(reviewQueue.add).toHaveBeenCalledWith('review-pr', {
+      owner: undefined,
+      repo: undefined,
+      prNumber: undefined,
+    });
+  });
+
+  it('rejects a request with no signature header at all', async () => {
+    const body = JSON.stringify(prPayload());
+
+    const res = await request(app)
+      .post('/webhook')
+      .set('Content-Type', 'application/json')
+      .send(body);
+
+    expect(res.status).toBe(401);
+    expect(reviewQueue.add).not.toHaveBeenCalled();
+  });
 });
