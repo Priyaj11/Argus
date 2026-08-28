@@ -35,6 +35,7 @@
     "@anthropic-ai/sdk": "^0.117.1",
     "@octokit/rest": "^22.0.1",
     "bullmq": "^6.1.1",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "ioredis": "^6.0.0",
     "pg": "^8.23.0"
