@@ -93,6 +93,10 @@ src/
 
 Every incoming webhook is signed by GitHub using a shared secret. The server recomputes that signature (HMAC-SHA256) and compares it before doing anything, so only genuine GitHub requests are processed.
 
+## License
+
+MIT
+
 ## Testing
 
 Argus has an automated test suite covering unit logic, the HTTP surface,
@@ -149,7 +153,3 @@ points that execute on import and expose no callable surface, and importing
 GitHub Actions runs the full suite on every push and pull request. The
 workflow requires no secrets: Nock isolates the external APIs and
 Testcontainers provides the databases.
-
-## License
-
-MIT
