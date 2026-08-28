@@ -5,7 +5,12 @@ import { reviewQueue } from './queue.js';
 
 export function createApp() {
   const app = express();
-  const WEBHOOK_SECRET = process.env.GITHUB_WEBHOOK_SECRET ?? '';
+  const WEBHOOK_SECRET = process.env.GITHUB_WEBHOOK_SECRET;
+  if (!WEBHOOK_SECRET) {
+    throw new Error(
+      'GITHUB_WEBHOOK_SECRET is not set. Refusing to start with an unverifiable webhook.'
+    );
+  }
 
   app.get('/health', (_req, res) => {
     res.json({ status: 'ok', time: new Date().toISOString() });

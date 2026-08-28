@@ -14,7 +14,15 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'lcov'],
       include: ['src/**/*.ts'],
-      exclude: ['src/server.ts'],
+      // Entry points: both execute on import and expose no testable surface.
+      // server.ts starts the listener; demo.ts runs a one-off sample review.
+      exclude: ['src/server.ts', 'src/demo.ts'],
+      thresholds: {
+        statements: 100,
+        branches: 97,
+        functions: 100,
+        lines: 97,
+      },
     },
   },
 });
