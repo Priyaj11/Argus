@@ -9,12 +9,15 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      TESTCONTAINERS_RYUK_DISABLED: true
+
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '22'
           cache: 'npm'
@@ -27,9 +30,6 @@ jobs:
 
       - name: Unit and API tests
         run: npm run test
-
-      - name: Integration tests
-        run: npm run test:integration
 
       - name: Full suite with coverage threshold
         run: npm run test:coverage
