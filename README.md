@@ -96,3 +96,60 @@ Every incoming webhook is signed by GitHub using a shared secret. The server rec
 ## License
 
 MIT
+
+## Testing
+
+Argus has an automated test suite covering unit logic, the HTTP surface,
+external API boundaries, and the full end to end workflow against real
+infrastructure. The suite runs offline and requires no credentials.
+
+### Running the tests
+
+```bash
+npm test                  # unit and API tests, no Docker needed, ~1s
+npm run test:unit         # pure logic only
+npm run test:api          # Express endpoints via Supertest
+npm run test:integration  # real Postgres and Redis, needs Docker
+npm run test:all          # everything
+npm run test:coverage     # everything, with the coverage threshold enforced
+```
+
+Docker must be running for the integration tests. Everything else runs
+without Docker and without a network connection.
+
+### Layers
+
+**Unit tests** cover HMAC signature verification, the startup configuration
+guard, the GitHub client's request shaping and error handling, and the Claude
+response parser including malformed, empty, and non-JSON replies.
+
+**API tests** drive the Express application through Supertest without opening
+a network port. They cover the health endpoint and the webhook endpoint's
+accept, reject, and ignore paths, asserting on side effects as well as status
+codes.
+
+**Nock** intercepts all outbound HTTP calls to the GitHub and Anthropic APIs.
+Those two hosts are blocked for the duration of the suite, so any request that
+is not explicitly mocked fails the test rather than reaching the real internet.
+
+**Testcontainers** starts real PostgreSQL and Redis containers for the
+integration tests. Schema creation, persistence, constraint enforcement, queue
+behaviour, and worker execution are exercised against real services rather
+than fakes.
+
+### Coverage
+
+Coverage is currently 100% on statements, branches, functions and lines.
+Thresholds are set at 97/97/100/97 in `vitest.config.ts` and the test command
+exits non-zero when they are violated, which has been verified rather than
+assumed.
+
+Two files are excluded: `src/server.ts` and `src/demo.ts`. Both are entry
+points that execute on import and expose no callable surface, and importing
+`demo.ts` would make a real Anthropic API call.
+
+### Continuous Integration
+
+GitHub Actions runs the full suite on every push and pull request. The
+workflow requires no secrets: Nock isolates the external APIs and
+Testcontainers provides the databases.
