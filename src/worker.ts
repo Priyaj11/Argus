@@ -4,7 +4,7 @@ import { fetchPrFiles, getLatestPrNumber, postPrComment } from './github.js';
 import { reviewCode } from './llm.js';
 import { saveReview } from './db.js';
 
-export function startWorker() {
+export function startWorker(): Worker {
   const worker = new Worker(
     'reviews',
     async (job) => {
@@ -43,4 +43,5 @@ export function startWorker() {
 
   worker.on('failed', (job, err) => console.log('Job failed', job?.id, err.message));
   console.log('Worker started, waiting for jobs...');
+  return worker;
 }
